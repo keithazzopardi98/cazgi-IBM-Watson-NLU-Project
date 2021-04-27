@@ -1,6 +1,6 @@
 const express = require('express');
-const express = require('dotenv');
-DeviceMotionEvent.config();
+const dotenv = require('dotenv');
+dotenv.config();
 
 function getNLUInstance() {
     let api_key = process.env.API_KEY
@@ -30,8 +30,25 @@ app.get("/",(req,res)=>{
   });
 
 app.get("/url/emotion", (req,res) => {
-
-    return res.send({"happy":"90","sad":"10"});
+    const nlu = getNLUInstance();
+    const analyzeParams = {
+        'html': '<html><head><title>Fruits</title></head><body><h1>Apples and Oranges</h1><p>I love apples! I don\'t like oranges.</p></body></html>',
+        'features': {
+            'emotion': {
+            'targets': [
+                'apples',
+                'oranges'
+            ]
+            }
+        }
+    };
+    nlu.analyze(analyzeParams)
+        .then(analysisResults => {
+            return res.send(analysisResults);
+        })
+        .catch(err => {
+           return res.send({'error':err});
+        });
 });
 
 app.get("/url/sentiment", (req,res) => {
