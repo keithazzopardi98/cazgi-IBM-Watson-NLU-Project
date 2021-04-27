@@ -30,24 +30,22 @@ app.get("/",(req,res)=>{
   });
 
 app.get("/url/emotion", (req,res) => {
+    //console.log(req.query.url)
     const nlu = getNLUInstance();
     const analyzeParams = {
-        'html': '<html><head><title>Fruits</title></head><body><h1>Apples and Oranges</h1><p>I love apples! I don\'t like oranges.</p></body></html>',
+        'url': req.query.url,
         'features': {
             'emotion': {
-            'targets': [
-                'apples',
-                'oranges'
-            ]
+                'document': true 
             }
         }
     };
     nlu.analyze(analyzeParams)
         .then(analysisResults => {
-            return res.send(analysisResults);
+            return res.send(analysisResults.result.emotion.document.emotion);
         })
         .catch(err => {
-           return res.send({'error':err});
+           return res.status(400).json({ error: err.toString() });
         });
 });
 
