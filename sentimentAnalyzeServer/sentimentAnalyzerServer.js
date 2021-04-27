@@ -54,7 +54,6 @@ app.get("/url/sentiment", (req,res) => {
 });
 
 app.get("/text/emotion", (req,res) => {
-    console.log("called text-emotion");
     const nlu = getNLUInstance();
     const analyzeParams = {
         'language': 'en',
@@ -65,15 +64,11 @@ app.get("/text/emotion", (req,res) => {
             }
         }
     };
-    console.log("going to analyze results for: "+req.query.text);
     nlu.analyze(analyzeParams)
         .then(analysisResults => {
-            console.log("analysis finished successfully")
-            console.log(analysisResults)
             return res.send(analysisResults.result.emotion.document.emotion);
         })
         .catch(err => {
-            console.log("analysis failed: \n"+err.toString())
             return res.status(400).json({ error: err.toString() });
         });
 });
