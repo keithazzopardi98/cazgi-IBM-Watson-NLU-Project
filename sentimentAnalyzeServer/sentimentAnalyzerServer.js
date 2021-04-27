@@ -54,7 +54,28 @@ app.get("/url/sentiment", (req,res) => {
 });
 
 app.get("/text/emotion", (req,res) => {
-    return res.send({"happy":"10","sad":"90"});
+    console.log("called text-emotion");
+    const nlu = getNLUInstance();
+    const analyzeParams = {
+        'language': 'en',
+        'text': req.query.text,
+        'features': {
+            'emotion': {
+                'document': true 
+            }
+        }
+    };
+    console.log("going to analyze results for: "+req.query.text);
+    nlu.analyze(analyzeParams)
+        .then(analysisResults => {
+            console.log("analysis finished successfully")
+            console.log(analysisResults)
+            return res.send(analysisResults.result.emotion.document.emotion);
+        })
+        .catch(err => {
+            console.log("analysis failed: \n"+err.toString())
+            return res.status(400).json({ error: err.toString() });
+        });
 });
 
 app.get("/text/sentiment", (req,res) => {
